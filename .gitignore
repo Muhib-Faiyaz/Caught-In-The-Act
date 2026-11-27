@@ -1,0 +1,10 @@
+# Gradle cache and build output
+.gradle/
+build/
+
+# FXGL runtime files
+/logs/
+/system/
+
+# macOS Finder metadata
+.DS_Store

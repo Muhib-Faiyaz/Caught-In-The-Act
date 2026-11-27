@@ -1,0 +1,16 @@
+plugins {
+id 'application'
+ id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+repositories { mavenCentral() }
+java {
+ toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+javafx {
+ version = '21.0.1'
+ modules = ['javafx.controls', 'javafx.fxml', 'javafx.media']
+}
+dependencies {
+ implementation 'com.github.almasb:fxgl:21.1'
+}
+application { mainClass = 'core.Launcher' }
