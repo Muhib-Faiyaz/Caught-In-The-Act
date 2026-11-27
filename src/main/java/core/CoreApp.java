@@ -13,92 +13,63 @@ public class CoreApp extends GameApplication {
 private Entity player;
 
 private boolean right,left,up,down;
+
+int windowX=800, windowY=600,width=40,height=40;
  public static void main(String[] args) { launch(args); }
  @Override
  protected void initSettings(GameSettings settings) {
  settings.setTitle("Caught In The Act");
  settings.setVersion("0.0");
- settings.setWidth(800);
- settings.setHeight(600);
+ settings.setWidth(windowX);
+ settings.setHeight(windowY);
  }
  @Override
  protected void initGame() {
   player=entityBuilder().at(100, 100)
- .view(new Rectangle(40, 40, Color.DODGERBLUE))
+ .view(new Rectangle(width, height, Color.DODGERBLUE))
  .buildAndAttach();
  
+ }
+
+ private void bind(KeyCode key, String name , java.util.function.Consumer<Boolean> set){
+
+    getInput().addAction(new UserAction(name) {
+        @Override 
+        protected void onActionBegin(){
+            set.accept(true);
+        }
+        @Override 
+        protected void onActionEnd(){
+            set.accept(false);
+        }
+    }, key);
  }
 
  @Override
  protected void initInput(){
      
-     getInput().addAction(new UserAction("Move right"){
-            @Override 
-            protected void onActionBegin(){
-                right=true;
-                
-            }
-            
-            @Override 
-            protected void onActionEnd(){
-                right=false;
-                
-            }
-        },KeyCode.D);
-
-        getInput().addAction(new UserAction("Move left"){
-            @Override 
-            protected void onActionBegin(){
-                left=true;
-                
-            }
-            
-            @Override 
-            protected void onActionEnd(){
-                left=false;
-                
-            }
-        },KeyCode.A);
-
-        getInput().addAction(new UserAction("Move up"){
-            @Override 
-            protected void onActionBegin(){
-                up=true;
-                
-            }
-            
-            @Override 
-            protected void onActionEnd(){
-                up=false;
-                
-            }
-        },KeyCode.W);
-
-        getInput().addAction(new UserAction("Move Down"){
-            @Override 
-            protected void onActionBegin(){
-                down=true;
-                
-            }
-            
-            @Override 
-            protected void onActionEnd(){
-                down=false;
-                
-            }
-        },KeyCode.S);
-
-        onKeyDown(KeyCode.E,()->player.setPosition(100,100));
+    bind(KeyCode.D,"Right",v->right=v);
+    bind(KeyCode.A,"Left",v->left=v);
+    bind(KeyCode.W,"Up",v->up=v);
+    bind(KeyCode.S,"Down",v->down=v);
     }
     
     @Override 
     protected void onUpdate(double tpf){
-        var speed=500*tpf;
+        
+        double dx=(right? 1:0) - (left? 1:0);
+        double dy= (down? 1:0) - (up? 1:0);
 
-        if(right) player.translateX(speed);
-        else if(left) player.translateX(-speed);
-        else if(up) player.translateY(-speed);
-        else if(down) player.translateY(speed);
+        double length= Math.hypot(dx, dy);
+        if (length == 0) return;
+        double step = 300 * Math.min(tpf,.05);
+
+        double X = player.getX() + (dx/length)*step;
+        double Y = player.getY() + (dy/length)*step;
+
+        player.setPosition(Math.max(0,Math.min(windowX-width,X)) , Math.max(0,Math.min(windowY-height,Y)));
+
+    
     } 
  
 }
