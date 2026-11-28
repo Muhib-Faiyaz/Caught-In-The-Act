@@ -1,13 +1,14 @@
 package core;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Circle;
+// import javafx.scene.paint.Color;
+// import javafx.scene.shape.Rectangle;
+// import javafx.scene.shape.Circle;
 import static com.almasb.fxgl.dsl.FXGL.*;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
 import javafx.scene.input.KeyCode;
+import com.almasb.fxgl.entity.SpawnData;
 
 public class CoreApp extends GameApplication {
 
@@ -16,8 +17,10 @@ private HealthComponent pHp;
 private Entity coin;
 private boolean right,left,up,down;
 
-int windowX=800, windowY=600,width=40,height=40;
+int windowX=800, windowY=600;
  public static void main(String[] args) { launch(args); }
+
+
  @Override
  protected void initSettings(GameSettings settings) {
  settings.setTitle("Caught In The Act");
@@ -26,37 +29,22 @@ int windowX=800, windowY=600,width=40,height=40;
  settings.setHeight(windowY);
  }
 
- private Entity spawnPlayer(double x, double y){
-    Entity player=entityBuilder().at(x, y)
-  .type(Kind.PLAYER)
-  .collidable()
-  .viewWithBBox(new Rectangle(width, height, Color.DODGERBLUE))
-  .with(new HealthComponent(100))
-  .buildAndAttach();
-
-  return player;
-
- }
- private Entity spawnCoin(double x, double y, int value){
-    Entity coin= entityBuilder()
-    .at(x, y)
-    .type(Kind.COIN)
-    .viewWithBBox(new Circle(10, Color.RED))
-    .collidable()
-    .buildAndAttach();
-
-    coin.setProperty("Value", value);
-
-    return coin;
- }
+ 
 
 
  @Override
  protected void initGame() {
- 
-    player = spawnPlayer(100, 100);
+    
+    getGameWorld().addEntityFactory(new gameEntityFactory());
+    player = spawn("player",100,100);
     pHp =player.getComponent(HealthComponent.class);
-     coin =spawnCoin(220, 300, 40);
+    
+    SpawnData coinData =new SpawnData(200,300);
+
+    coinData.put("Value",40);
+    coin=spawn("coin",coinData);
+     
+     
  
 
  
@@ -100,7 +88,7 @@ int windowX=800, windowY=600,width=40,height=40;
         double X = player.getX() + (dx/length)*step;
         double Y = player.getY() + (dy/length)*step;
 
-        player.setPosition(Math.max(0,Math.min(windowX-width,X)) , Math.max(0,Math.min(windowY-height,Y)));
+        player.setPosition(Math.max(0,Math.min(windowX-10,X)) , Math.max(0,Math.min(windowY-60,Y)));
 
         double ddcx= (player.getX()+20)-220 , ddcy = (player.getY()+20)-300;
          if(Math.hypot(ddcx, ddcy)<7){
