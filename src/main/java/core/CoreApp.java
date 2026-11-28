@@ -27,6 +27,7 @@ int windowX=800, windowY=600;
  settings.setVersion("0.002");
  settings.setWidth(windowX);
  settings.setHeight(windowY);
+ 
  }
 
  
@@ -48,6 +49,17 @@ int windowX=800, windowY=600;
  
 
  
+ }
+
+ @Override 
+ protected void initPhysics(){
+    onCollisionBegin(Kind.PLAYER, Kind.COIN, (p,c)->{
+        HealthComponent health =p.getComponent(HealthComponent.class);
+        int damage = c.getInt("Value");
+        health.damage(damage);
+        c.removeFromWorld();
+
+    });
  }
 
  private void bind(KeyCode key, String name , java.util.function.Consumer<Boolean> set){
@@ -88,13 +100,9 @@ int windowX=800, windowY=600;
         double X = player.getX() + (dx/length)*step;
         double Y = player.getY() + (dy/length)*step;
 
-        player.setPosition(Math.max(0,Math.min(windowX-10,X)) , Math.max(0,Math.min(windowY-60,Y)));
+        player.setPosition(Math.max(0,Math.min(windowX-20,X)) , Math.max(0,Math.min(windowY-60,Y)));
 
-        double ddcx= (player.getX()+20)-220 , ddcy = (player.getY()+20)-300;
-         if(Math.hypot(ddcx, ddcy)<7){
-            pHp.damage(coin.getInt("Value"));
-            coin.removeFromWorld();
-         }
+        
 
          
     } 
